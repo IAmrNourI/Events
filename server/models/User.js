@@ -13,10 +13,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin"],
+      enum: ["user"],
     },
-    otp: { type: String },
-    otpExpires: { type: Date },
   },
   { timestamps: true }
 );
