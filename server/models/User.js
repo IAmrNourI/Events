@@ -11,12 +11,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
     },
-    role: {
-      type: String,
-      enum: ["admin"],
-    },
-    otp: { type: String },
-    otpExpires: { type: Date },
   },
   { timestamps: true }
 );

@@ -2,9 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
 const { isAuth } = require("../middlewares/auth/isAuth");
-const isRole = require("../middlewares/auth/isRole");
 
-const { isVerifyResetPasswordOtp } = require("../middlewares/auth/isAuth");
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);

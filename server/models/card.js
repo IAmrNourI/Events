@@ -14,16 +14,36 @@ const cardSchema = new mongoose.Schema({
         required: [true, "Image is required"]
     },
 
-    type: {
+    titleAr:{
         type: String,
-        required: [true, "Type is required"],
-        enum: ["product", "portfolio"]
+        required: [true, "Title is required"]
     },
 
-    isDetailed: {
-        type: Boolean,
-        required: true,
-        default: false,
+    descriptionAr:{
+        type: String,
+        required: [true, "Description is required"]
+    },
+
+    date:{
+        type: Date,
+        default: Date.now
+    },
+    counter:{
+        type: Number,
+        default: 0
+    },
+    category:{
+        type: String,
+        required: [true, "Category is required"],
+        enum: ["Ai", "Front End", "Back End", "Flutter", "Others"],
+    },
+    price: {
+        type: Number,
+        required: [true, "Price is required"]
+    },
+    venue: {
+        type: String,
+        required: [true, "Venue is required"]
     }
 })
 
