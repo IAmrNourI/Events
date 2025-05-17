@@ -3,10 +3,16 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Register from './Components/Register/Register';
+import Login from './Components/Login/Login';
 import Layout from './Components/Layout/Layout';
-import { Toaster } from 'react-hot-toast';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import toast, { Toaster } from 'react-hot-toast';
+import Home from './Components/Home/Home';
+import About from './Components/About/About';
+import MyEvents from './Components/MyEvents/MyEvents';
+import { LanguageProvider } from './Context/Language';
+import Card from './Components/Card/Card';
+import AllEvents from './Components/AllEvents/AllEvents';
 
 
 function App() {
@@ -17,15 +23,14 @@ function App() {
     path: "/",
     element: <Layout />,
     children: [
-      // { index: true, element: <Home /> },
-      // { path: "home", element: <Home /> }, 
-      // { path: "about", element: <About /> },
-      // { path: "portfolio", element: <Services /> },
-      // { path: "products", element: <Products /> },
-      // { path: "contact", element: <Contact /> },
-      // { path: "card-details", element: <CardDetails /> },
+      { index: true, element: <Home /> },
+      { path: "about", element: <About /> },
+      { path: "myevents", element: <MyEvents /> },
+      { path: "card", element: <Card /> },
+      { path: "allevents", element: <AllEvents /> },
       //auth
       { path: "auth/register", element: <Register /> },
+      { path: "auth/login", element: <Login /> },
       // { path: "auth/verifyemail", element: <VerifyEmail /> },
       // { path: "auth/sendotp", element: <SendOtp /> },
       // { path: "auth/newpassword", element: <NewPassword /> },
@@ -54,8 +59,10 @@ function App() {
 
   return (
     <>
-      {/* <Toaster /> */}
+    <LanguageProvider>
+      <Toaster />
       <RouterProvider router={route} />
+    </LanguageProvider>
     </>
   )
 }
