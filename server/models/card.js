@@ -36,6 +36,14 @@ const cardSchema = new mongoose.Schema({
         type: String,
         required: [true, "Category is required"],
         enum: ["Ai", "Front End", "Back End", "Flutter", "Others"],
+    },
+    price: {
+        type: Number,
+        required: [true, "Price is required"]
+    },
+    venue: {
+        type: String,
+        required: [true, "Venue is required"]
     }
 })
 

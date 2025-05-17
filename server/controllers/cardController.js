@@ -4,7 +4,7 @@ const deleteImage = require("../utils/deleteImage");
 
 exports.getCards = async (req, res) => {
   try {
-    const cards = await Card.find({ type }).select('-__v -createdAt -updatedAt');
+    const cards = await Card.find().select('-__v -createdAt -updatedAt');
 
     const baseUrl = `${req.protocol}://${req.get("host")}`;
 
@@ -48,8 +48,8 @@ exports.getHomePortfolio = async (req, res) => {
 
 exports.addCard = async (req, res) => {
   try {
-    const { title, description, image, titleAr, descriptionAr, date, category } = req.body;
-    const newCard = new Card({ title, description, image, titleAr, descriptionAr, date, category });
+    const { title, description, image, titleAr, descriptionAr, date, category, price, venue } = req.body;
+    const newCard = new Card({ title, description, image, titleAr, descriptionAr, date, category, price, venue });
     await newCard.save();
     res.status(201).json({
       message: "Card added successfully",
@@ -64,7 +64,7 @@ exports.addCard = async (req, res) => {
 exports.updateCard = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, image, titleAr, descriptionAr } = req.body;
+    const { title, description, image, titleAr, descriptionAr, date, category, price, venue } = req.body;
     const card = await Card.findById(id);
     if (!card) {
       return res.status(404).json({ message: "Card not found", error: true });
@@ -77,6 +77,10 @@ exports.updateCard = async (req, res) => {
     card.image = image;
     card.titleAr = titleAr;
     card.descriptionAr = descriptionAr;
+    card.date = date;
+    card.category = category;
+    card.price = price;
+    card.venue = venue;
     await card.save();
     res.status(200).json({
       message: "Card updated successfully",
@@ -110,11 +114,13 @@ exports.deleteCard = async (req, res) => {
 
 exports.apply = async (req, res) => {
   try {
-    const userId = req.user;
-    const {cardId} = req.body
-    const newDetails = new Details({ userId, cardId });
+    const userId = req.user.id;
+    const { id } = req.params;
+    console.log(userId);
+    console.log(id);
+    const newDetails = new Details({ userId, cardId: id });
     await newDetails.save();
-    const card = await Card.findById(cardId);
+    const card = await Card.findById(id);
     card.counter += 1;
     await card.save();
     res.status(201).json({
@@ -145,11 +151,25 @@ exports.uploadFile = async (req, res) => {
 
 exports.getMyCards = async (req, res) => {
   try {
-    const userId = req.user;
+    const userId = req.user.id;
     const details = await Details.find({ userId }).select('-__v -createdAt -updatedAt');
     res.status(200).json({
       message: "Details fetched successfully",
       data: details,
+      error: false,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message, error: true });
+  }
+}
+
+exports.getCardById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const card = await Card.findById(id).select('-__v -createdAt -updatedAt');
+    res.status(200).json({
+      message: "Card fetched successfully",
+      data: card,
       error: false,
     });
   } catch (error) {
