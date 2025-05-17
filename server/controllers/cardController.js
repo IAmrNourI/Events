@@ -4,7 +4,6 @@ const deleteImage = require("../utils/deleteImage");
 
 exports.getCards = async (req, res) => {
   try {
-    const { type } = req.query;
     const cards = await Card.find({ type }).select('-__v -createdAt -updatedAt');
 
     const baseUrl = `${req.protocol}://${req.get("host")}`;
@@ -49,9 +48,8 @@ exports.getHomePortfolio = async (req, res) => {
 
 exports.addCard = async (req, res) => {
   try {
-    const { type } = req.query;
-    const { title, description, image } = req.body;
-    const newCard = new Card({ title, description, image, type });
+    const { title, description, image, titleAr, descriptionAr, date, category } = req.body;
+    const newCard = new Card({ title, description, image, titleAr, descriptionAr, date, category });
     await newCard.save();
     res.status(201).json({
       message: "Card added successfully",
@@ -66,7 +64,7 @@ exports.addCard = async (req, res) => {
 exports.updateCard = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, image } = req.body;
+    const { title, description, image, titleAr, descriptionAr } = req.body;
     const card = await Card.findById(id);
     if (!card) {
       return res.status(404).json({ message: "Card not found", error: true });
@@ -77,6 +75,8 @@ exports.updateCard = async (req, res) => {
     card.title = title;
     card.description = description;
     card.image = image;
+    card.titleAr = titleAr;
+    card.descriptionAr = descriptionAr;
     await card.save();
     res.status(200).json({
       message: "Card updated successfully",
@@ -108,134 +108,28 @@ exports.deleteCard = async (req, res) => {
   }
 };
 
-
-exports.addCardDetails = async (req, res) => {
+exports.apply = async (req, res) => {
   try {
-    const { id, title, description, image } = req.body;
-    const card = await Card.findById(id);
-    if (!card) {
-      return res.status(404).json({ message: "Card not found", error: true });
-    }
-    const newDetails = new Details({ title, description, image, card: id });
+    const userId = req.user;
+    const {cardId} = req.body
+    const newDetails = new Details({ userId, cardId });
     await newDetails.save();
-
-    res.status(200).json({
-      message: "Card details updated successfully",
-      data: card,
-      error: false,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message, error: true });
-  }
-};
-
-exports.getCardDetails = async (req, res) => {
-  try {
-    const { id } = req.query;
-    const card = await Card.findById(id).select('-__v -createdAt -updatedAt');
-    if (!card) {
-      return res.status(404).json({ message: "Card not found", error: true });
-    }
-    const details = await Details.find({ card: id }).select('-__v -createdAt -updatedAt');
-
-    const baseUrl = `${req.protocol}://${req.get("host")}`;
-
-    const cardWithImageUrl = {
-      ...card.toObject(),
-      imageUrl: `${baseUrl}/uploads/${card.image}`,
-    };
-
-    const detailsWithImageUrl = details.map((detail) => ({
-      ...detail.toObject(),
-      imageUrl: `${baseUrl}/uploads/${detail.image}`,
-    }));
-
-    res.status(200).json({
-      message: "Card details fetched successfully",
-      data: { cardWithImageUrl, detailsWithImageUrl },
-      error: false,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message, error: true });
-  }
-};
-
-exports.deleteCardDetails = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const details = await Details.findById(id);
-    if (!details) {
-      return res
-        .status(404)
-        .json({ message: "Details not found", error: true });
-    }
-    await Details.findByIdAndDelete(id);
-    deleteImage(details.image);
-    res.status(200).json({
-      message: "Card details deleted successfully",
-      error: false,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message, error: true });
-  }
-};
-
-exports.updateCardDetails = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, description, image } = req.body;
-    const details = await Details.findById(id);
-    if (!details) {
-      return res
-       .status(404)
-       .json({ message: "Details not found", error: true });
-    }
-    if(image !== details.image){
-      deleteImage(details.image);
-    }
-
-    details.title = title;
-    details.description = description;
-    details.image = image;
-
-    await details.save();
-
-    res.status(200).json({
-      message: "Card details updated successfully",
-      data: details,
-      error: false,
-    });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message, error: true });
-  }
-};
-exports.toggleDetails = async (req, res) => {
-  try{
-    const { id } = req.params;
-    const card = await Card.findById(id);
-    if (!card) {
-      return res
-       .status(404)
-       .json({ message: "Card not found", error: true });
-    }
-    card.isDetailed =!card.isDetailed;
+    const card = await Card.findById(cardId);
+    card.counter += 1;
     await card.save();
-    res.status(200).json({
-      message: "Card details updated successfully",
-      data: card,
+    res.status(201).json({
+      message: "Details added successfully",
+      data: newDetails,
       error: false,
     });
-
-  }catch (error) {
+  } catch (error) {
     res.status(500).json({ message: error.message, error: true });
   }
-}
+};
 
 exports.uploadFile = async (req, res) => {
   try {
     if (!req.file) {
-      //req.file without s if single file in routes
       return res.status(400).json({ message: "No file uploaded" });
     }
     return res
@@ -248,3 +142,17 @@ exports.uploadFile = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+exports.getMyCards = async (req, res) => {
+  try {
+    const userId = req.user;
+    const details = await Details.find({ userId }).select('-__v -createdAt -updatedAt');
+    res.status(200).json({
+      message: "Details fetched successfully",
+      data: details,
+      error: false,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message, error: true });
+  }
+}
