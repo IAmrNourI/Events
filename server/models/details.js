@@ -1,22 +1,17 @@
 const mongoose = require("mongoose");
-
 const detailsSchema = new mongoose.Schema({
-    card : {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Card",
-        required: [true, "Card is required"  ],
+        ref: "User",
+        required: true
     },
-    title: {
-        type: String,
-    },
-    description: {
-        type: String,
-    },
-    image: {
-        type: String,
+    cardId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "card",
+        required: true
     }
-    
+
 })
 
 const Details = mongoose.model("Details", detailsSchema);
-module.exports = Details;
+module.exports = Details
