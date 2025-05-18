@@ -8,11 +8,14 @@ import Layout from './Components/Layout/Layout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import toast, { Toaster } from 'react-hot-toast';
 import Home from './Components/Home/Home';
-import About from './Components/About/About';
 import MyEvents from './Components/MyEvents/MyEvents';
 import { LanguageProvider } from './Context/Language';
 import Card from './Components/Card/Card';
 import AllEvents from './Components/AllEvents/AllEvents';
+import CardDetails from './Components/CardDetails/CardDetails';
+import Admin from './Components/Admin/Admin';
+import AddEvent from './Components/AddEvents/AddEvent';
+import EditEvent from './Components/EditEvent/EditEvent';
 
 
 function App() {
@@ -24,10 +27,14 @@ function App() {
     element: <Layout />,
     children: [
       { index: true, element: <Home /> },
-      { path: "about", element: <About /> },
       { path: "myevents", element: <MyEvents /> },
       { path: "card", element: <Card /> },
       { path: "allevents", element: <AllEvents /> },
+      { path: "card-details/:id", element: <CardDetails /> },      
+      { path: "admin", element: <Admin/> },
+      { path: "addevent", element: <AddEvent /> },
+      { path: "editevent", element: <EditEvent /> },
+
       //auth
       { path: "auth/register", element: <Register /> },
       { path: "auth/login", element: <Login /> },
