@@ -26,7 +26,7 @@ exports.getCards = async (req, res) => {
 
 exports.getHomePortfolio = async (req, res) => {
   try {
-    const cards = await Card.find({ type : "portfolio" }).sort({ createdAt: 1 }).limit(6).select('-__v -createdAt -updatedAt');
+    const cards = await Card.find({}).sort({ createdAt: 1 }).limit(6).select('-__v -createdAt -updatedAt');
 
     const baseUrl = `${req.protocol}://${req.get("host")}`;
 
@@ -153,6 +153,7 @@ exports.getMyCards = async (req, res) => {
   try {
     const userId = req.user.id;
     const details = await Details.find({ userId }).select('-__v -createdAt -updatedAt');
+    
     res.status(200).json({
       message: "Details fetched successfully",
       data: details,
@@ -167,9 +168,16 @@ exports.getCardById = async (req, res) => {
   try {
     const { id } = req.params;
     const card = await Card.findById(id).select('-__v -createdAt -updatedAt');
+
+        const baseUrl = `${req.protocol}://${req.get("host")}`;
+
+      const obj = card.toObject();
+      obj.imageUrl = `${baseUrl}/uploads/${card.image}`;
+
+    
     res.status(200).json({
       message: "Card fetched successfully",
-      data: card,
+      data: obj,
       error: false,
     });
   } catch (error) {

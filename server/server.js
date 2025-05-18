@@ -47,3 +47,4 @@ app.use("/api/aboutus", aboutUsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/card", cardRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploaded")));
+//qROXFfGLwcXg20xr
