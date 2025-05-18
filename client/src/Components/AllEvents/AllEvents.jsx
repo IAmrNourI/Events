@@ -1,14 +1,26 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { getAllEvents, getUserBookingAPi } from '../../Network/card.api';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LanguageContext } from '../../Context/Language';
+import { isLoggedIn } from '../../Network/auth.api';
 
 export default function AllEvents() {
   const [getProducts, setgetProducts] = useState([]);
   const [getUserBookingId, setgetUserBookingId] = useState([]);
   const [bookedCards, setBookedCards] = useState([]);
   const {language, setLanguage} = useContext(LanguageContext)
+  const navigate = useNavigate()
 
+    async function isLogged(){
+        await isLoggedIn()
+        .then((res) => {
+          console.log("llogin???",res)
+        })
+        .catch((res) => {
+          console.log("llogin???",res)
+            navigate("/auth/login");
+        })
+    }
 
 
 async function getCard() {
@@ -52,6 +64,7 @@ async function applyNow(id) {
   useEffect(() => {
     getCard();
     getUserBooking();
+          isLogged()
   }, []);
 
   useEffect(() => {
